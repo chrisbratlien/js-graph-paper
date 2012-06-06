@@ -1,0 +1,148 @@
+<html>
+  <head>
+    <style type="text/css">
+      td { width: 0.1em; height: 0.1em;  cursor: pointer; }
+      /* td { border: 1px solid #eee; } */
+      
+      
+      #pickers { width: 30em; height: 10em; overflow: auto; }
+      .color-picker { width: 2em; height: 2em; float: left; cursor: pointer; }
+    
+    </style>
+    <script src="array.js"></script>
+    <script src="color.js"></script>
+    <script src="jquery-latest.js"></script>
+    <script>
+    
+      if (typeof BSD == "undefined") {
+        var BSD = {};    
+      }
+      BSD.chosenColor = BSD.colorFromHex('#000000');
+      BSD.ColorPicker = function(spec) {
+        var interface = {};
+        interface.renderOn = function(html) {
+          var square = jQuery('<div class="color-picker"></div>');
+          square.css('background',spec.color.toHex());
+          square.click(function() {
+            BSD.chosenColor = spec.color;
+          });
+          html.append(square);
+        };
+        return interface;
+      };
+      
+
+      BSD.penDown = false;
+
+      
+      BSD.Grid = function(spec) {
+        var interface = {};
+        interface.renderOn = function(html) {
+        
+          var table = jQuery('<table cellpadding="0" cellspacing="0"></table>');
+          
+          var strings = [];
+          var frets = [];
+          
+          var rows = 200;
+          var cols = 200;
+          
+          for (var i = 0; i < rows; i += 1) { strings.push('x'); }
+          for (var i = 0; i < cols; i += 1) { frets.push('x'); }
+          
+          strings.each(function(string){
+            var row = jQuery('<tr>');
+            frets.each(function(fret){
+              var cell = jQuery('<td>&nbsp;</td>');
+              var state = false;
+              
+              cell.click(function() {
+                console.log('cliiick');
+                state = !state; 
+                if (!state) {
+                  cell.css('background','white');
+                }
+                else {
+                  if (BSD.penDown) {
+                    cell.css('background',BSD.chosenColor.toHex());
+                  }
+                }
+              });
+              cell.hover(function() {
+                console.log('hover');
+                state = true; 
+                if (!state) {
+                  cell.css('background','white');
+                }
+                else {
+                  if (BSD.penDown) {
+                    cell.css('background',BSD.chosenColor.toHex());
+                  }
+                }
+              });
+              
+              
+              
+              
+              
+              
+              
+              
+              
+              row.append(cell);
+            })
+            table.append(row);
+          });          
+          html.append(table);
+        };  
+        
+        return interface;
+      };
+      
+      jQuery(document).keypress(function(e) {
+        console.log('keyyyy',e);
+        if (e.charCode = 32) {
+          BSD.penDown = !BSD.penDown;
+        }
+      });
+      
+      jQuery(document).ready(function() {
+      
+        var pickers = jQuery('#pickers');
+        
+        var palettes = [];
+        palettes.push(BSD.play());
+        palettes.push(BSD.play());
+        palettes.push(BSD.play());
+
+        palettes.each(function(pal) {
+          pal.each(function(randcolor) { 
+          var picker = BSD.ColorPicker({ color: randcolor});
+          picker.renderOn(pickers);
+          });
+        });
+      
+      
+        var penDownToggle = jQuery('#pen-down-toggle');
+        penDownToggle.click(function() {
+          BSD.penDown = ! BSD.penDown;
+        
+        });
+      
+      
+        var grid = BSD.Grid({});
+        var content = jQuery('#content');
+        grid.renderOn(content);
+      });
+    </script>
+  </head>
+  <body>
+    <div id="content">
+      <div id="pickers">
+      
+      </div><!-- pickers -->
+      <button id="pen-down-toggle">Pen Down Toggle</button>
+      
+    </div><!-- content -->
+  </body>
+</html>
