@@ -1,0 +1,157 @@
+<html>
+<head>
+  <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+  <script src="http://cdn.dev.bratliensoftware.com/javascript/array.js"></script>
+  <script src="http://cdn.dev.bratliensoftware.com/javascript/dom.js"></script>
+  <script src="http://cdn.dev.bratliensoftware.com/javascript/bsd.pubsub.js"></script>
+  <style type="text/css">
+
+table { 
+
+}
+td { 
+  width: 44px; 
+  height: 44px; 
+  border-right: 1px solid black; 
+  border-top: 1px solid black; 
+  
+  
+  
+}
+
+input { width: 44px; height: 44px; line-height: 44px; }
+
+.sharp { background: #409; color: white; }
+
+.flat { background: #904; color: white; }
+
+.first { background: yellow; }
+
+.avoid { background: #bbb; color: #777; }
+
+</style>
+</head>
+<body>
+<div id="wrap"></div>
+<script type="text/javascript">
+
+if (typeof BSD == "undefined") { 
+BSD = {};
+} 
+
+
+BSD.keycodes = {
+    TAB: 9,
+    "RETURN": 13,
+    ENTER: 13,
+    PERIOD: 46,
+    DOWN: 40,
+    UP: 38,
+    LEFT: 37,
+    RIGHT: 39
+  };
+
+
+
+BSD.Grid = function(spec) {
+  var self = BSD.PubSub({});
+  
+  var rows = [];
+  var columns = [];
+  
+  for (var i = 0; i < spec.rows; i += 1) { rows.push(i); }
+  for (var i = 0; i < spec.columns; i += 1) { columns.push(i); }
+  
+  function decorate(input) {
+       if (input.val().match(/b/)) { input.addClass('flat'); }
+          else { input.removeClass('flat'); }
+
+          if (input.val().match(/#/)) { input.addClass('sharp'); }
+          else { input.removeClass('sharp'); }
+
+          if (input.val().match(/x/)) { input.addClass('avoid'); }
+          else { input.removeClass('avoid'); }
+
+
+  }
+  
+  
+  self.renderOn = function(wrap) {
+    var table = DOM.table();
+    rows.each(function(r){
+      var row = DOM.tr();
+      columns.each(function(col){
+        var key = 'row-' + r + '-col-' + col;
+        var cell = DOM.td();
+        
+        var input = DOM.input();
+        input.addClass(key);
+
+        input.val(localStorage.getItem(key));
+        
+        input.attr('maxlength',6);//maxLength = 2;
+        
+        
+        input.change(function(){
+          ////console.log('key',key);
+          localStorage.setItem(key,this.value);
+          
+          //decorate(input); 
+          
+        });
+        
+        input.keydown(function(e){
+          var c = e.keyCode || e.which;
+          //console.log('KEYUP EVENT!!!!',c);  
+          
+          if (c == BSD.keycodes.UP || c == BSD.keycodes.DOWN || c == BSD.keycodes.LEFT || c == BSD.keycodes.RIGHT) {
+            var otherR = r;
+            var otherCol = col;
+
+            if (c == BSD.keycodes.UP) { otherR -= 1; }
+            if (c == BSD.keycodes.DOWN) { otherR += 1; }
+            if (c == BSD.keycodes.LEFT) { otherCol -= 1; }
+            if (c == BSD.keycodes.RIGHT) { otherCol += 1; }
+  
+            jQuery('.row-' + otherR + '-col-' + otherCol).focus();
+            
+          }
+          else {
+            //var newtext = cell.text() + c;
+            ///localStorage.setItem(key,newtext);  
+          }          
+
+          
+        
+        });
+        //decorate(input);         
+        
+        cell.append(input);
+        row.append(cell);  
+      });    
+      table.append(row);
+    });
+    wrap.append(table);
+  };
+  
+  return self;
+};
+
+
+var grid = BSD.Grid({
+  rows: 60,
+  columns: 60
+  
+});
+
+var wrap = jQuery('#wrap');
+
+
+grid.renderOn(wrap);
+
+
+
+
+</script>
+</body>
+</html>
