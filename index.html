@@ -186,6 +186,17 @@
           sticky.renderOn(jQuery(document.body));
         });
 
+
+        var fat = true;
+
+        var grid = jQuery('.grid');
+        var btnFat = jQuery('.btn-fat');
+        btnFat.on('click',() => { 
+          fat = !fat; 
+          btnFat.text(fat?'Small':'Fat');
+          grid.toggleClass('fat')
+        });
+
  });      
       -->
     </script>
@@ -195,11 +206,12 @@
       <div id="pickers">
       </div><!-- pickers -->
       
+      <button class="btn-fat">Fat</button>
       <button id="pen-down-toggle">Pen Down Toggle</button>
       <button id="stringer-button">Stringer</button>
       <button id="sticky-note-button">Sticky Note</button>
       <p>&#x266d; &#x266f; &#x25b3;</p>
-      <div id="grid"></div><!-- grid -->
+      <div id="grid" class="grid fat"></div><!-- grid -->
     </div><!-- content -->
   </body>
 </html>
